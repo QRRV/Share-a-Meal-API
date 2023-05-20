@@ -45,7 +45,7 @@ function login(req, res, next) {
     });
 }
 
-function validateInput(req, res, next) {
+function validateLogin(req, res, next) {
     const { emailAddress, password } = req.body;
     const reEmail = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     const rePass = /^[a-zA-Z0-9]{4,}$/;
@@ -69,5 +69,5 @@ function validateInput(req, res, next) {
 
 module.exports = {
     login,
-    validateInput,
+    validateInput: validateLogin,
 };
