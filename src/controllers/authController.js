@@ -22,6 +22,7 @@ function login(req, res, next) {
                         if (err) console.log(err);
                         if (token) {
                             user.token = token;
+                            delete user.password;
                             res.status(200).json({
                                 statusCode: 200,
                                 result: user,

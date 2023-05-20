@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const dbconnection = require('../../database/dbconnection')
 const assert = require('assert')
-
+const reDateTime = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;;
 function validate(req, res, next) {
     const authHeader = req.headers.authorization;
 
@@ -45,11 +45,20 @@ function validateMeal(req, res, next) {
         assert(typeof isVegan === 'boolean', 'isVegan must be a boolean');
         assert(typeof isToTakeHome === 'boolean', 'isToTakeHome must be a boolean');
         assert(typeof dateTime === 'string', 'dateTime must be a string');
+        assert.match(dateTime, reDateTime, "dateTime must be valid")
         assert(typeof imageUrl === 'string', 'imageUrl must be a string');
         assert(typeof allergenes === 'string', 'allergenes must be a string');
         assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number');
         assert(typeof price === 'number', 'Price must be a number');
-
+        const date = new Date(dateTime);
+        if (isNaN(date)) {
+            const error = {
+                statusCode: 400,
+                message: "DateTime must be valid",
+            };
+            next(error);
+            return;
+        }
         next();
     } catch (err) {
         const error = {

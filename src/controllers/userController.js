@@ -29,25 +29,60 @@ function validate(req, res, next) {
 
 
 function getAllUsers(req, res) {
-    const { firstName, isActive, amount } = req.query;
+    // Define the valid filters that can be applied
+    const validFilters = ['firstName', 'lastName', 'street', 'city', 'isActive', 'emailAdress'];
+
+    // Extract the 'amount' parameter from the request and store the remaining filters in 'filters' object
+    const { amount, ...filters } = req.query;
     const array = [];
 
-    console.log(`firstName = ${firstName} isActive = ${isActive} amount = ${amount}`);
+    // Check if more than two filters are provided
+    if (Object.keys(filters).length > 2) {
+        return res.status(400).json({
+            statusCode: 400,
+            message: 'Only a maximum of two filters are allowed.',
+        });
+    }
 
     let queryString = `SELECT ${selectWithoutRoles} FROM user`;
+    let conditions = [];
 
-    if (firstName || isActive) {
-        queryString += ` WHERE ${firstName ? 'firstName LIKE ?' : ''}${firstName && isActive ? ' AND ' : ''}${isActive ? 'isActive = ?' : ''}`;
+    // Process each filter
+    for (const key in filters) {
+        if (validFilters.includes(key)) {
+            let filterValue = filters[key];
 
-        if (firstName) {
-            array.push(`%${firstName}%`);
-        }
+            // Handle special case for 'isActive' filter
+            if (key === 'isActive') {
+                if (filterValue === 'true') {
+                    filterValue = 1;
+                } else if (filterValue === 'false') {
+                    filterValue = 0;
+                } else {
+                    return res.status(400).json({
+                        statusCode: 400,
+                        message: `Invalid value for isActive filter. Only 'true' or 'false' are allowed.`,
+                    });
+                }
+            }
 
-        if (isActive) {
-            array.push(isActive);
+            // Add the filter condition and corresponding value to the arrays
+            conditions.push(`${key} LIKE ?`);
+            array.push(`%${filterValue}%`);
+        } else {
+            return res.status(400).json({
+                statusCode: 400,
+                message: `Invalid filter '${key}'.`,
+            });
         }
     }
 
+    // Construct the WHERE clause with the filter conditions
+    if (conditions.length > 0) {
+        queryString += ` WHERE ${conditions.join(' AND ')}`;
+    }
+
+    // Add optional 'amount' parameter for pagination
     if (amount && !isNaN(amount)) {
         queryString += ` ORDER BY id LIMIT ${amount}`;
     }
@@ -56,6 +91,7 @@ function getAllUsers(req, res) {
 
     console.log(queryString);
 
+    // Execute the SQL query
     dbconnection.getConnection((err, connection) => {
         if (err) throw err;
 
@@ -73,6 +109,8 @@ function getAllUsers(req, res) {
         });
     });
 }
+
+
 
 function validateNewUser(req, res, next) {
     const user = req.body;
@@ -163,32 +201,44 @@ function getPersonalProfile(req, res, next) {
         );
     });
 }
-function getUserById (req, res, next) {
+function getUserById(req, res, next) {
     const userId = req.params.userId;
     dbconnection.getConnection(function (err, connection) {
-        if (err) throw err
+        if (err) throw err;
         connection.query(
-            'SELECT ' + selectWithoutRoles + ' FROM user WHERE id = ' + userId,
-            function (error, results) {
-                connection.release()
-                if (error) throw error
-                if (results.length > 0) {
-                    let user = results[0]
-                    res.status(200).json({
-                        statusCode: 200,
-                        result: user,
-                    })
+            'SELECT id, firstName, lastName, emailAdress, phoneNumber FROM user WHERE id = ' + userId,
+            function (error, userResults) {
+                if (error) throw error;
+                if (userResults.length > 0) {
+                    let user = userResults[0];
+                    const currentDate = new Date().toISOString().split('T')[0]; // Get the current date in "YYYY-MM-DD" format
+                    connection.query(
+                        'SELECT * FROM meal WHERE cookId = ' + userId + ' AND DATE(dateTime) >= DATE(\'' + currentDate + '\')',
+                        function (error, mealResults) {
+                            connection.release();
+                            if (error) throw error;
+                            user.meals = mealResults;
+                            res.status(200).json({
+                                statusCode: 200,
+                                result: user,
+                            });
+                        }
+                    );
                 } else {
                     const error = {
                         statusCode: 404,
                         message: `User with ID ${userId} not found`,
-                    }
+                    };
                     next(error);
                 }
             }
-        )
-    })
+        );
+    });
 }
+
+
+
+
 
 function updateUser (req, res, next) {
     const userId = req.params.userId;
