@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 const userRouter = require('./src/routes/userRoutes')
 const authRouter = require('./src/routes/authRoutes')
+const mealRouter = require('./src/routes/mealRoutes')
 
 let database = [];
 let id = 0;
@@ -17,6 +18,8 @@ app.all('*', (req, res, next) => {
 
 app.use(userRouter)
 app.use(authRouter)
+app.use(mealRouter)
+
 app.get('/', (req, res) => {
     res.status(200).json({
         status: 200,

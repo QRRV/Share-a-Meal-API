@@ -26,9 +26,6 @@ function validate(req, res, next) {
     });
 }
 
-module.exports = {
-    validate,
-};
 
 
 function getAllUsers(req, res) {
