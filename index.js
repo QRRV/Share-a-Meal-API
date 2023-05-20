@@ -3,6 +3,8 @@ const app = express()
 const port = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
+const userRouter = require('./src/routes/userRoutes')
+const authRouter = require('./src/routes/authRoutes')
 
 let database = [];
 let id = 0;
@@ -12,6 +14,9 @@ app.all('*', (req, res, next) => {
     console.log(`Methode ${method} aangeroepen`);
     next();
 })
+
+app.use(userRouter)
+app.use(authRouter)
 app.get('/', (req, res) => {
     res.status(200).json({
         status: 200,
