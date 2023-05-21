@@ -80,7 +80,7 @@ function addMeal(req, res, next) {
                 meal.isToTakeHome,
                 meal.dateTime,
                 meal.imageUrl,
-                meal.allergenes,
+                meal.allergenes.toString(),
                 meal.maxAmountOfParticipants,
                 meal.price,
                 req.userId,
