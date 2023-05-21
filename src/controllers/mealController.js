@@ -112,6 +112,7 @@ function addMeal(req, res, next) {
 
                         res.status(201).json({
                             statusCode: 201,
+                            message: "Meal added",
                             result: fullMeal,
                         });
                     });
@@ -135,6 +136,7 @@ function getAllMeals(req, res) {
 
             res.status(200).json({
                 statusCode: 200,
+                message: "Meals found",
                 result: results,
             });
         });
@@ -155,6 +157,7 @@ function getMealById(req, res, next) {
                 const meal = results[0];
                 res.status(200).json({
                     statusCode: 200,
+                    message: "Meal found",
                     result: meal,
                 });
             } else {
@@ -200,7 +203,7 @@ function deleteMeal(req, res, next) {
                 });
             } else {
                 const error = {
-                    statusCode: 400,
+                    statusCode: 404,
                     message: `Meal with ID ${mealId} not found`,
                 };
                 next(error);

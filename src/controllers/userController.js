@@ -41,6 +41,7 @@ function getAllUsers(req, res) {
         return res.status(400).json({
             statusCode: 400,
             message: 'Only a maximum of two filters are allowed.',
+            result: [],
         });
     }
 
@@ -73,6 +74,7 @@ function getAllUsers(req, res) {
             return res.status(400).json({
                 statusCode: 400,
                 message: `Invalid filter '${key}'.`,
+                result: [],
             });
         }
     }
@@ -104,6 +106,7 @@ function getAllUsers(req, res) {
 
             res.status(200).json({
                 statusCode: 200,
+                message: 'Successfully retrieved users',
                 result: results,
             });
         });
@@ -150,7 +153,7 @@ function addUser(req, res, next) {
                     if (error.errno === 1062) {
                         return res.status(409).json({
                             statusCode: 409,
-                            message: 'Email address is already registered',
+                            message: 'Email address already exists',
                         });
                     } else {
                         throw error;
@@ -169,6 +172,7 @@ function addUser(req, res, next) {
 
                             res.status(201).json({
                                 statusCode: 201,
+                                message: 'User successfully created',
                                 result: newUser,
                             });
                         }
@@ -195,7 +199,7 @@ function getPersonalProfile(req, res, next) {
                     const error = { statusCode: 404, message: `User with ID ${req.userId} not found` };
                     next(error);
                 } else {
-                    res.status(200).json({ statusCode: 200, result: user });
+                    res.status(200).json({ statusCode: 200, message: "Successfully retrieved profile", result: user });
                 }
             }
         );
@@ -220,6 +224,7 @@ function getUserById(req, res, next) {
                             user.meals = mealResults;
                             res.status(200).json({
                                 statusCode: 200,
+                                message: 'Successfully retrieved user',
                                 result: user,
                             });
                         }
@@ -288,6 +293,7 @@ function updateUser (req, res, next) {
                                             userEdited = results[0]
                                             res.status(200).json({
                                                 statusCode: 200,
+                                                message: 'User successfully updated',
                                                 result: userEdited,
                                             })
                                         }
@@ -297,7 +303,7 @@ function updateUser (req, res, next) {
                         })
                 } else {
                     const error = {
-                        statusCode: 400,
+                        statusCode: 404,
                         message: `User with ID ${userId} not found`,
                     }
                     next(error);
@@ -361,7 +367,7 @@ function deleteUser (req, res, next)  {
                         })
                 } else {
                     const error = {
-                        statusCode: 400,
+                        statusCode: 404,
                         message: `User with ID ${userId} not found`,
                     }
                     next(error);

@@ -25,6 +25,7 @@ function login(req, res, next) {
                             delete user.password;
                             res.status(200).json({
                                 statusCode: 200,
+                                message: 'Login successful',
                                 result: user,
                             });
                         }
