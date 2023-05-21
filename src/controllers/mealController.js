@@ -78,7 +78,7 @@ function addMeal(req, res, next) {
                 meal.isVega,
                 meal.isVegan,
                 meal.isToTakeHome,
-                meal.dateTime,
+                meal.dateTime.toString(),
                 meal.imageUrl,
                 meal.allergenes,
                 meal.maxAmountOfParticipants,
