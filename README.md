@@ -1,5 +1,5 @@
 
-# Share a Meal API by QRRV
+# Share a Meal API by [QRRV](https://github.com/qrrv)
 
 This project was made for school and the get a deeper understanding of HTTP and how an API is made.
 
