@@ -1,5 +1,5 @@
 
-# Share a Meal API Quinn Verschoor
+# Share a Meal API by QRRV
 
 This project was made for school and the get a deeper understanding of HTTP and how an API is made.
 
